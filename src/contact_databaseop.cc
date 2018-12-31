@@ -1,10 +1,10 @@
 #include "../include/contact_databaseop.h"
 #include <stdio.h>
 
-const char kServer[] = "127.0.0.1";
-const char kUser[] = "root";
-const char kPassword[] = "123456";
-const char kDB[] = "addressbook";
+const char *kServer = "localhost";
+const char *kUser = "root";
+const char *kPassword = "123456";
+const char *kDB = "addressbook";
 const int kPort = 3306;
 
 ContactDatabaseOP *ContactDatabaseOP::get_instance(){
@@ -14,12 +14,16 @@ ContactDatabaseOP *ContactDatabaseOP::get_instance(){
 
 ContactDatabaseOP::ContactDatabaseOP(){
   // ... log初始化开始
-  mysql_init(conn_);
-  mysql_query(conn_, "set names 'utf8'");
-  if(!mysql_real_connect(conn_, kServer, kUser, kPassword, kDB, kPort, NULL, 0)){
+  conn_ = mysql_init(NULL);
+  if(NULL == conn_){
+    // ...log数据库句柄初始化失败
+    exit(1);
+  }
+  if(!mysql_real_connect(conn_, kServer, kUser, kPassword, kDB, 0, NULL, 0)){
     // ... log
     exit(1);
   }
+  mysql_query(conn_, "set names 'utf8';");
   // ... log初始化完成
 }
 

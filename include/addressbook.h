@@ -9,7 +9,7 @@ class AddressBook{
 public:
   AddressBook();
   void print_info();
-  bool insert_contact(const Contact &contact);
+  bool insert_contact(const Contact * const contact);
   bool delete_contact(int index);
   void search_by_name(const std::string &name);
   void search_by_ip(const std::string &ip);
