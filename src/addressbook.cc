@@ -5,11 +5,15 @@
 
 AddressBook::AddressBook(){
   // ...log通讯录初始化开始
+  all_contacts();
+  // ...log通讯录初始化完成
+}
+
+void AddressBook::all_contacts(){
   std::string sql = "select id, name, sex, address, ip "
                     "from contacts;";
   ContactDatabaseOP *dbop = ContactDatabaseOP::get_instance();
   contacts_v_ = dbop->query_contacts(sql);
-  // ...log通讯录初始化完成
 }
 
 void AddressBook::print_info(){
@@ -86,5 +90,11 @@ void AddressBook::search_by_ip(const std::string &ip){
   ContactDatabaseOP *dbop = ContactDatabaseOP::get_instance();
   contacts_v_ = dbop->query_contacts(sql);
   // ...log以ip查找成功
+  print_info();
+}
+
+void AddressBook::search_all(){
+  all_contacts();
+  // ...log查询所以联系人成功
   print_info();
 }

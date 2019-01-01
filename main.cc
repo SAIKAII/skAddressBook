@@ -21,6 +21,7 @@ void search_usage(){
   std::cout << "可以按照名字或者IP查询联系人，请输入想查询的方式" << std::endl;
   std::cout << "1、按照名字查询" << std::endl;
   std::cout << "2、按照IP查询" << std::endl;
+  std::cout << "3、查询所有联系人" << std::endl;
   std::cout << "0、退出查询" << std::endl;
 }
 
@@ -67,6 +68,8 @@ int main(){
         std::cout << "请输入想查询联系人IP：";
         std::cin >> ip;
         addressbook.search_by_ip(ip);
+      }else if(3 == method){
+        addressbook.search_all();
       }else{
         std::cout << "此次查询终止" << std::endl;
       }
