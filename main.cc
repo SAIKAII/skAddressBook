@@ -7,6 +7,7 @@ void print_usage(){
   std::cout << "2、插入联系人" << std::endl;
   std::cout << "3、删除联系人" << std::endl;
   std::cout << "4、查找联系人" << std::endl;
+  std::cout << "5、与线上人联系" << std::endl;
   std::cout << "0、退出系统" << std::endl;
 }
 
@@ -73,6 +74,11 @@ int main(){
       }else{
         std::cout << "此次查询终止" << std::endl;
       }
+    }else if(5 == flag){
+      // ...log开始与线上人联系
+      Communication communication;
+      communication.start();
+      // ...log与线上人联系结束
     }else if(0 == flag){
       // ...log正常退出程序
       break;
