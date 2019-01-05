@@ -13,7 +13,8 @@ public:
   void send_message();
   void recv_message();
   void set_time(){ start_time_ = std::time(nullptr); }
-  std::time_t get_time(){ return start_time_; }
+  std::time_t get_time() const { return start_time_; }
+  int get_sockfd() const { return sockfd_; }
   ~CommunicationClient(){ close(sockfd_); }
 
 private:
