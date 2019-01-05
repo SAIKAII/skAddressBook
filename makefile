@@ -28,6 +28,10 @@ global_config.o: global_config.cc global_config.h contact_databaseop.h contact.h
 	$(G++)
 
 communicationclient.o: communicationclient.cc communicationclient.h epollop.h event_timer.h
+	$(G++)
+
+event_timer.o: event_timer.cc event_timer.h epollop.h
+	$(G++)
 
 clean:
 	rm *.o simpleaddressbook
