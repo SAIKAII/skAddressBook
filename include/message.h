@@ -11,7 +11,7 @@ const char *kMsg = "\\4";
 class Message{
 public:
   Message() = default;
-  Message(std::string name, std::string ip, std::string port, std::string msg)
+  Message(const std::string &name, const std::string &ip, const std::string &port, const std::string &msg)
     : name_(name), ip_(ip), port_(port), msg_(msg){};
   std::string get_name() const { return name_; }
   std::string get_ip() const { return ip_; }

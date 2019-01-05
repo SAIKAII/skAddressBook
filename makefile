@@ -27,5 +27,7 @@ onlinedbop.o: onlinedbop.cc onlinedbop.h global_config.h
 global_config.o: global_config.cc global_config.h contact_databaseop.h contact.h
 	$(G++)
 
+communicationclient.o: communicationclient.cc communicationclient.h epollop.h event_timer.h
+
 clean:
 	rm *.o simpleaddressbook

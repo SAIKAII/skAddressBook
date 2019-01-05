@@ -11,10 +11,10 @@ public:
     : name_(name), ip_(ip), port_(port){}
   Online(int id, std::string name, std::string ip, std::string port)
     : id_(id), name_(name), ip_(ip), port_(port){}
-  std::string get_name(){ return name_; }
-  std::string get_ip(){ return ip_; }
-  std::string get_port(){ return port_; }
-  void print_info(){
+  const std::string get_name() const { return name_; }
+  const std::string get_ip() const { return ip_; }
+  const std::string get_port() const { return port_; }
+  void print_info() const {
     std::cout.flags(std::ios::left);
     std::cout << std::setw(10) << name_ << std::setw(17) << ip_
     << std::setw(6) << port_ << std::endl;
