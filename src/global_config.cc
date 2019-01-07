@@ -9,6 +9,8 @@
 #include <memory>
 #include <vector>
 
+#include <iostream>
+
 GlobalConfig::GlobalConfig(){
   char hname[128];
   struct hostent *hent;
@@ -16,13 +18,14 @@ GlobalConfig::GlobalConfig(){
   // ...log获取本机IP
   gethostname(hname, sizeof(hname));
   hent = gethostbyname(hname);
-  std::string ip = inet_ntoa(*(in_addr*)hent->h_addr_list[0]);
+  ip_ = inet_ntoa(*(in_addr*)hent->h_addr_list[0]);
+  std::cout << ip_ << std::endl;
   // ...log获取本机IP成功
 
   // ...log通过IP地址从“联系人”表中获取客户端信息
   std::string sql = "select id, name, sex, address, ip "
                     "from contacts "
-                    "where ip = '" + ip + "';";
+                    "where ip = '" + ip_ + "';";
   ContactDatabaseOP *dbop = ContactDatabaseOP::get_instance();
   std::shared_ptr<std::vector<Contact>> contact_v = dbop->query_contacts(sql);
   name_ = contact_v->front().get_name();

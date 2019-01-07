@@ -8,15 +8,15 @@
 #include <strings.h>
 
 EpollOP::EpollOP(){
-  thr_ = std::thread(std::bind(&EpollOP::monitor, this));
-}
-
-void EpollOP::monitor(){
   epollfd_ = epoll_create(10);  // 这里的数值在Linux 2.6.8之后已经无意义的，但是必须是大于0
   if(-1 == epollfd_){
     // ...log创建失败
     exit(1);
   }
+  thr_ = std::thread(std::bind(&EpollOP::monitor, this));
+}
+
+void EpollOP::monitor(){
   epoll_event events[MAX_EVENTS];
   int nfds, conn_sock, n;
   while(true){
@@ -33,6 +33,17 @@ void EpollOP::monitor(){
         do_use_fd(&events[n]);
       }
     }
+  }
+}
+
+void EpollOP::set_listenfd(int listenfd){
+  listenfd_ = listenfd;
+  epoll_event ev;
+  ev.data.fd = listenfd_;
+  ev.events = EPOLLIN | EPOLLET;  // 这里真的要ET模式吗？会不会出问题？
+  if(-1 == epoll_ctl(epollfd_, EPOLL_CTL_ADD, listenfd_, &ev)){
+    // ...log通信配置出错，程序无法正常运行
+    exit(1);
   }
 }
 
@@ -86,7 +97,7 @@ void EpollOP::do_use_fd(epoll_event *ev){
     del_event(ev->data.fd);
   }else if(ev->events & EPOLLOUT){
     // 暂时来说，会符合该条件的，只有：connect成功了
-    ClientServer *cs_ptr = cs_map_.find(ev->data.fd)->second;
+    ClientServer *cs_ptr = (cs_map_.find(ev->data.fd))->second;
     cs_ptr->send_message();
   }else if(ev->events & EPOLLIN){
     std::unordered_map<int, ClientServer*>::iterator it = cs_map_.find(ev->data.fd);

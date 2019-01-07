@@ -1,6 +1,6 @@
 VPATH = include:src:util
 
-OBJECTS = main.o contact.o contact_databaseop.o addressbook.o
+OBJECTS = main.o contact.o contact_databaseop.o addressbook.o communication.o communicationclient.o communicationserver.o epollop.o event_timer.o global_config.o onlinedbop.o message_packet_and_unpacking.o
 G++ = g++ -g -o $@ -c $<
 
 simpleaddressbook: $(OBJECTS)
@@ -31,6 +31,15 @@ communicationclient.o: communicationclient.cc communicationclient.h epollop.h ev
 	$(G++)
 
 event_timer.o: event_timer.cc event_timer.h epollop.h
+	$(G++)
+
+communication.o: communication.cc communication.h message_packet_and_unpacking.h epollop.h global_config.h
+	$(G++)
+
+communicationserver.o: communicationserver.cc communicationserver.h message_packet_and_unpacking.h message.h
+	$(G++)
+
+epollop.o: epollop.cc epollop.h
 	$(G++)
 
 clean:

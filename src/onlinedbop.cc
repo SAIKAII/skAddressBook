@@ -1,10 +1,10 @@
 #include "../include/onlinedbop.h"
 
-const char *kServer = "localhost";
-const char *kUser = "root";
-const char *kPassword = "123456";
-const char *kDB = "addressbook";
-const int kPort = 3306;
+static const char *kServer = "localhost";
+static const char *kUser = "root";
+static const char *kPassword = "123456";
+static const char *kDB = "addressbook";
+static const int kPort = 3306;
 
 OnlineDBOP::OnlineDBOP(){
   // ... log初始化开始

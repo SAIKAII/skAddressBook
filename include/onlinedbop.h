@@ -16,11 +16,11 @@ public:
   }
   void init(const int port = 40000);
   std::shared_ptr<std::vector<Online>> query_onlines(const std::string &sql);
+  bool update_tbl_online(const std::string &);
   ~OnlineDBOP();
 
 private:
   OnlineDBOP();
-  bool update_tbl_online(const std::string &);
 
   MYSQL *conn_;
 };

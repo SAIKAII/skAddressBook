@@ -18,7 +18,7 @@ public:
     static EpollOP epoll_op;
     return &epoll_op;
   }
-  void set_listenfd(int listenfd){ listenfd_ = listenfd; }
+  void set_listenfd(int listenfd);
   void add_event(const int sockfd, ClientServer *cs, const int flag);
   void del_event(const int sockfd);
   ~EpollOP();

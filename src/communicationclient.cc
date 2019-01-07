@@ -11,10 +11,11 @@
 
 CommunicationClient::CommunicationClient(const Online &online, std::shared_ptr<MessagePacket> &msg_ptr){
   msg_ptr_ = msg_ptr;
-  sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
-  int flags = fcntl(sockfd_, F_GETFL, 0);
+  int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+  set_sockfd(sockfd);
+  int flags = fcntl(sockfd, F_GETFL, 0);
   // ...log设置套接字非阻塞
-  fcntl(sockfd_, F_SETFL, flags | O_NONBLOCK);
+  fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
 
   sockaddr_in addr;
   bzero((void*)&addr, sizeof(sockaddr_in));
@@ -23,24 +24,26 @@ CommunicationClient::CommunicationClient(const Online &online, std::shared_ptr<M
   addr.sin_addr.s_addr = inet_addr(online.get_ip().c_str());
   // ...log将套接字加入epoll监控
   EpollOP *epoll_op = EpollOP::get_instance();
-  epoll_op->add_connect(sockfd_);
+  epoll_op->add_event(sockfd, this, CONNECT);
   // ...log开始创建连接
-  connect(sockfd_, (sockaddr*)&addr, sizeof(sockaddr_in));
+  connect(sockfd, (sockaddr*)&addr, sizeof(sockaddr_in));
 }
 
 void CommunicationClient::send_message(){
   // ...log开始发送信息。首先是进行监控。
   EpollOP *epoll_op = EpollOP::get_instance();
-  epoll_op->add_send(sockfd_);
+  epoll_op->add_event(get_sockfd(), this, SEND);
   EventTimer *event_timer = EventTimer::get_instance();
   event_timer->add(this);
 
   std::string &msg = msg_ptr_->get_packet();
-  send(sockfd_, msg.c_str(), msg.length(), 0);
+  send(get_sockfd(), msg.c_str(), msg.length(), 0);
 }
 
 void CommunicationClient::recv_message(){
+  EpollOP *epoll_op = EpollOP::get_instance();
+  epoll_op->del_event(get_sockfd());
   // ...log接受到彼端的回复，从计时器中删除该套接字
   EventTimer *event_timer = EventTimer::get_instance();
-  event_timer->del(sockfd_);
+  event_timer->del(get_sockfd());
 }

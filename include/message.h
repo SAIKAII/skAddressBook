@@ -3,10 +3,6 @@
 
 #include <string>
 
-const char *kName = "\\1";
-const char *kIP = "\\2";
-const char *kPort = "\\3";
-const char *kMsg = "\\4";
 
 class Message{
 public:

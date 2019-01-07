@@ -1,4 +1,5 @@
 #include "include/addressbook.h"
+#include "include/communication.h"
 #include <string>
 #include <iostream>
 
@@ -77,6 +78,7 @@ int main(){
     }else if(5 == flag){
       // ...log开始与线上人联系
       Communication communication;
+      communication.init();
       communication.start();
       // ...log与线上人联系结束
     }else if(0 == flag){

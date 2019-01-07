@@ -17,34 +17,37 @@ void EventTimer::event_wait(){
     while(!manager_list_.empty()){
       // 这里应该来个锁
       obj_ptr = manager_list_.front();
-      CommunicationClient *comm_ptr = obj_ptr->comm_ptr_;
+      ClientServer *cs_ptr = obj_ptr->cs_ptr_;
       if(obj_ptr->del_){
         manager_list_.pop_front();
         delete obj_ptr;
         continue;
-      }else if(std::difftime(std::time(nullptr), comm_ptr->get_time()) < 2.0){
+      }else if(std::difftime(std::time(nullptr), cs_ptr->get_time()) < 2.0){
         break;
       }
       manager_list_.pop_front();
       // 这里解锁
       // 超过时间还没有指定事件发生，所以要删除了
       EpollOP *epoll_op = EpollOP::get_instance();
-      epoll_op->del_event(comm_ptr->get_sockfd());
-      del(comm_ptr->get_sockfd());
+      epoll_op->del_event(cs_ptr->get_sockfd());
+      del(cs_ptr->get_sockfd());
       delete obj_ptr;
     }
   }
 }
 
-void EventTimer::add(CommunicationClient *event){
+void EventTimer::add(ClientServer *event){
+  event->set_time();
   ObjectManager *ptr = new ObjectManager(event);
   manager_list_.push_back(ptr);
   manager_map_.insert(std::make_pair(event->get_sockfd(), ptr));
 }
 
 void EventTimer::del(const int sockfd){
-  std::map<int, ObjectManager*>::iterator it = manager_map_.find(sockfd);
-  delete it->second->comm_ptr_;
+  std::unordered_map<int, ObjectManager*>::iterator it = manager_map_.find(sockfd);
+  if(manager_map_.end() == it)
+    return;
+  delete it->second->cs_ptr_;
   it->second->del_ = true;
   manager_map_.erase(it);
 }

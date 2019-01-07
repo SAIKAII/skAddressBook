@@ -2,14 +2,15 @@
 #define ADDRESSBOOK_INCLUDE_EVENT_TIMER_H_
 
 #include "communicationclient.h"
+#include "communicationserver.h"
 #include <list>
-#include <map>
+#include <unordered_map>
 #include <thread>
 
 struct ObjectManager{
   bool del_;
-  CommunicationClient *comm_ptr_;
-  ObjectManager(CommunicationClient *ptr) : comm_ptr_(ptr){ del_ = false; }
+  ClientServer *cs_ptr_;
+  ObjectManager(ClientServer *ptr) : cs_ptr_(ptr){ del_ = false; }
 };
 
 class EventTimer{
@@ -18,14 +19,14 @@ public:
     static EventTimer event_timer;
     return &event_timer;
   }
-  void add(CommunicationClient *);
+  void add(ClientServer *);
   void del(const int);
 private:
   EventTimer();
   void event_wait();
 
   std::list<ObjectManager*> manager_list_;
-  std::map<int, ObjectManager*> manager_map_;
+  std::unordered_map<int, ObjectManager*> manager_map_;
   std::thread thr_;
 };
 
