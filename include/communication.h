@@ -19,6 +19,7 @@ private:
   void comm_with_one();
 
   std::shared_ptr<std::vector<Online>> onlines_;
+  int listenfd_;
 };
 
 #endif

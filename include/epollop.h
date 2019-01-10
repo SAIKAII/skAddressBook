@@ -19,6 +19,7 @@ public:
     return &epoll_op;
   }
   void set_listenfd(int listenfd);
+  void del_listenfd();
   void add_event(const int sockfd, ClientServer *cs, const int flag);
   void del_event(const int sockfd);
   ~EpollOP();

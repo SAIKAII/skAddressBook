@@ -8,6 +8,7 @@
 #include <strings.h>
 
 EpollOP::EpollOP(){
+  listenfd_ = -1;
   epollfd_ = epoll_create(10);  // 这里的数值在Linux 2.6.8之后已经无意义的，但是必须是大于0
   if(-1 == epollfd_){
     // ...log创建失败
@@ -47,6 +48,15 @@ void EpollOP::set_listenfd(int listenfd){
   }
 }
 
+void EpollOP::del_listenfd(){
+  epoll_event ev;
+  if(-1 == epoll_ctl(epollfd_, EPOLL_CTL_DEL, listenfd_, &ev)){
+    // ...log退出通讯删除监听套接字失败
+    exit(1);
+  }
+  listenfd_ = -1;
+}
+
 void EpollOP::create_connect(){
   sockaddr_in addr;
   socklen_t addrlen;
@@ -70,10 +80,18 @@ void EpollOP::add_event(const int sockfd, ClientServer *cs, const int flag){
     ev.events = EPOLLIN | EPOLLOUT;
   }
   ev.data.fd = sockfd;
-  if(-1 == epoll_ctl(epollfd_, EPOLL_CTL_ADD, sockfd, &ev)){
-    // ...log添加事件到内核事件表失败
-    // 这里就不多做处理的，没加入就算了，等带计时器删掉相关套接字及资源
-    return;
+  if(ACCEPT == flag || CONNECT == flag){
+    if(-1 == epoll_ctl(epollfd_, EPOLL_CTL_ADD, sockfd, &ev)){
+      // ...log添加事件到内核事件表失败
+      // 这里就不多做处理的，没加入就算了，等带计时器删掉相关套接字及资源
+      return;
+    }
+  }else{
+    if(-1 == epoll_ctl(epollfd_, EPOLL_CTL_MOD, sockfd, &ev)){
+      // ...log添加事件到内核事件表失败
+      // 这里就不多做处理的，没加入就算了，等带计时器删掉相关套接字及资源
+      return;
+    }
   }
   // ...log添加事件到内核事件表成功
   cs_map_.insert(std::make_pair(sockfd, cs));

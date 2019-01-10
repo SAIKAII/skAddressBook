@@ -9,45 +9,40 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <strings.h>
+#include <unistd.h>
 
 void Communication::init(){
   // ...log进入通讯状态
   OnlineDBOP *onlinedbop = OnlineDBOP::get_instance();
-  std::cout << "请输入想使用的本机端口号（默认：40000）：";
-  std::string port_str = "40000";
+  std::cout << "请输入想使用的本机端口号：";
+  std::string port_str;
   int port;
   std::cin >> port_str;
-  if(port_str.empty()){
-    onlinedbop->init();
-    port = 40000;
-  }else{
-    port = std::stoi(port_str);
-    onlinedbop->init(port);
-  }
+  port = std::stoi(port_str);
+  onlinedbop->init(port);
   GlobalConfig *global_config = GlobalConfig::get_instance();
-  global_config->set_port(port_str);
   sockaddr_in servaddr;
-  int listenfd = socket(AF_INET, SOCK_STREAM, 0);
-  if(-1 == listenfd){
+  listenfd_ = socket(AF_INET, SOCK_STREAM, 0);
+  if(-1 == listenfd_){
     // ...log失败，无法通讯
     exit(1);
   }
-  int flags = fcntl(listenfd, F_GETFL, 0);
-  fcntl(listenfd, F_SETFL, flags | O_NONBLOCK);
+  int flags = fcntl(listenfd_, F_GETFL, 0);
+  fcntl(listenfd_, F_SETFL, flags | O_NONBLOCK);
   bzero(&servaddr, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
   servaddr.sin_port = htons(port);
   servaddr.sin_addr.s_addr = inet_addr(global_config->get_ip().c_str());
-  if(-1 == bind(listenfd, (sockaddr*)&servaddr, sizeof(servaddr))){
+  if(-1 == bind(listenfd_, (sockaddr*)&servaddr, sizeof(servaddr))){
     // ...log绑定失败，无法通讯
     exit(1);
   }
-  if(-1 == listen(listenfd, 10)){
+  if(-1 == listen(listenfd_, 10)){
     // ...log监听套接字失败，无法通讯
     exit(1);
   }
   EpollOP *epoll_op = EpollOP::get_instance();
-  epoll_op->set_listenfd(listenfd);
+  epoll_op->set_listenfd(listenfd_);
 }
 
 void Communication::start(){
@@ -152,4 +147,7 @@ Communication::~Communication(){
                     + global_config->get_port() + "';";
   OnlineDBOP *onlinedbop = OnlineDBOP::get_instance();
   onlinedbop->update_tbl_online(sql);
+  EpollOP *epoll_op = EpollOP::get_instance();
+  epoll_op->del_listenfd();
+  close(listenfd_);
 }
