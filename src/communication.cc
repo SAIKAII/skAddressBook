@@ -54,6 +54,7 @@ void Communication::start(){
     std::cout << "请输入想要联系的人：" << std::endl;
     std::cout << "1、信息发送给所有人" << std::endl;
     std::cout << "2、信息发送给指定的人" << std::endl;
+    std::cout << "3、刷新联系表" << std::endl;
     std::cout << "0、退出聊天" << std::endl;
 
     std::cin >> option;
@@ -61,6 +62,8 @@ void Communication::start(){
       comm_with_all();
     }else if(2 == option){
       comm_with_one();
+    }else if(3 == option){
+      continue;
     }else{
       break;
     }
