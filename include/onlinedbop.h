@@ -14,7 +14,7 @@ public:
     static OnlineDBOP onlinedbop;
     return &onlinedbop;
   }
-  void init(const int port = 40000);
+  void init();
   std::shared_ptr<std::vector<Online>> query_onlines(const std::string &sql);
   bool update_tbl_online(const std::string &);
   ~OnlineDBOP();

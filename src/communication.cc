@@ -14,13 +14,21 @@
 void Communication::init(){
   // ...log进入通讯状态
   OnlineDBOP *onlinedbop = OnlineDBOP::get_instance();
+  std::cout << "请输入登录IP：";
+  std::string ip_str;
+  std::cin >> ip_str;
   std::cout << "请输入想使用的本机端口号：";
   std::string port_str;
-  int port;
   std::cin >> port_str;
-  port = std::stoi(port_str);
-  onlinedbop->init(port);
   GlobalConfig *global_config = GlobalConfig::get_instance();
+  global_config->set_ip(ip_str);
+  global_config->set_port(port_str);
+  global_config->set_name(ip_str);
+  onlinedbop->init();
+
+  int port;
+  port = std::stoi(port_str);
+
   sockaddr_in servaddr;
   listenfd_ = socket(AF_INET, SOCK_STREAM, 0);
   if(-1 == listenfd_){

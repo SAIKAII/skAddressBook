@@ -30,16 +30,13 @@ OnlineDBOP::~OnlineDBOP(){
   // ... log连接关闭失败
 }
 
-void OnlineDBOP::init(const int port){
+void OnlineDBOP::init(){
   // ...log“在线”表数据库操作初始化开始
   GlobalConfig *global_config = GlobalConfig::get_instance();
-  std::string port_str = std::to_string(port);
-  // ...log记录端口号到全局配置
-  global_config->set_port(port_str);
   std::string sql = "insert into online(name, ip, port) values('"
                     + global_config->get_name() + "', '"
                     + global_config->get_ip() + "', '"
-                    + port_str + "');";
+                    + global_config->get_port() + "');";
   if(!update_tbl_online(sql)){
     // ...log”在线“表数据库操作初始化失败
     std::cout << "初始化”在线“表失败。" << std::endl;
